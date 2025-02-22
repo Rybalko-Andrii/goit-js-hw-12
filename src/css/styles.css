@@ -14,6 +14,12 @@ a {
   margin-bottom: 20px;
 }
 
+.search-input {
+  padding: 8px 16px;
+  border: 1px solid gray;
+  border-radius: 4px;
+}
+
 .gallery {
   display: flex;
   flex-wrap: wrap;
@@ -65,6 +71,39 @@ a {
   color: black;
 }
 
-.load-more {
+.search-btn {
+  background-color: blue;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  color: antiquewhite;
+  cursor: pointer;
+  transition: 250ms cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+
+.search-btn:hover {
+  background-color: rgb(84, 84, 234);
+}
+
+.loader {
   margin: 0 auto;
+}
+
+.load-more {
+  display: flex;
+  margin-inline: auto;
+  background-color: blue;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  color: antiquewhite;
+  cursor: pointer;
+  transition: 250ms cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+
+.load-more:hover {
+  background-color: rgb(84, 84, 234);
+}
+.hide {
+  display: none;
 }
