@@ -1,34 +1,15 @@
-import iziToast from 'izitoast';
-import 'izitoast/dist/css/iziToast.min.css';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const box = document.querySelector('.gallery');
-const load = document.querySelector('.loader');
-const loadMoreBtn = document.querySelector('.load-more');
-
-export function removeLoadStroke(daddyElement) {
-  const textElement = daddyElement.querySelector('.loading-text');
-  const loaderElement = daddyElement.querySelector('.loader');
-
-  if (textElement) textElement.remove();
-  if (loaderElement) loaderElement.remove();
-
-  loadMoreBtn.classList.remove('hide');
-}
+const lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+});
 
 export function markup(data) {
   const { hits } = data;
 
-  if (hits.length === 0) {
-    iziToast.error({
-      message:
-        'Sorry, there are no images matching your search query. Please, try again!',
-    });
-    box.innerHTML = '';
-
-    return;
-  }
   const markup = hits
     .map(image => {
       const {
@@ -40,6 +21,7 @@ export function markup(data) {
         comments,
         downloads,
       } = image;
+
       return `
         <li class="gallery-item">
           <a href="${largeImageURL}" class="gallery-link">
@@ -53,13 +35,8 @@ export function markup(data) {
           </a>
         </li>`;
     })
-    .join(' ');
-  removeLoadStroke(load);
-  box.insertAdjacentHTML('beforeend', markup);
+    .join('');
 
-  const lightbox = new SimpleLightbox('.gallery a', {
-    captionsData: 'alt',
-    captionDelay: 250,
-  });
+  box.insertAdjacentHTML('beforeend', markup);
   lightbox.refresh();
 }

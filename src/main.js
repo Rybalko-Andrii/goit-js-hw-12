@@ -1,6 +1,5 @@
-import { getImage } from './js/pixabay-api';
-import { resetPage } from './js/pixabay-api';
-import { addPage } from './js/pixabay-api';
+import { fetchImages, addPage, resetPage, page } from './js/pixabay-api';
+import { markup } from './js/render-functions.js';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
@@ -9,23 +8,62 @@ const loadMoreBtn = document.querySelector('.load-more');
 const form = document.querySelector('.search-form');
 const input = document.querySelector('.search-input');
 
-form.addEventListener('submit', event => {
+let currentQuery = '';
+
+loadMoreBtn.classList.add('hide');
+
+form.addEventListener('submit', async event => {
   event.preventDefault();
-  let inputValue = input.value.trim();
+  const inputValue = input.value.trim();
+
   if (!inputValue) {
-    iziToast.error({
-      message:
-        'Sorry, there are no images matching your search query. Please try again!',
-    });
+    showError(
+      'Sorry, there are no images matching your search query. Please try again!'
+    );
     return;
   }
+
+  currentQuery = inputValue;
   box.innerHTML = '';
   resetPage();
-  getImage(inputValue);
+  loadMoreBtn.classList.add('hide');
+
+  await loadImages(currentQuery);
+  input.value = '';
 });
 
-loadMoreBtn.addEventListener('click', event => {
-  let inputValue = input.value.trim();
+loadMoreBtn.addEventListener('click', async () => {
   addPage();
-  getImage(inputValue);
+  await loadImages(currentQuery);
 });
+
+async function loadImages(query) {
+  try {
+    const data = await fetchImages(query);
+
+    if (data.hits.length === 0 && data.totalHits === 0) {
+      showError(
+        'Sorry, there are no images matching your search query. Please try again!'
+      );
+      return;
+    }
+
+    markup(data);
+
+    if (
+      data.hits.length < 40 ||
+      data.hits.length + (page - 1) * 40 >= data.totalHits
+    ) {
+      loadMoreBtn.classList.add('hide');
+      showError("We're sorry, but you've reached the end of search results.");
+    } else {
+      loadMoreBtn.classList.remove('hide');
+    }
+  } catch (error) {
+    showError(error.message);
+  }
+}
+
+function showError(message) {
+  iziToast.error({ message });
+}
